@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Colpy Launch Countdown</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/jpeg" href="colpy_logo3.jpeg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Orbitron", sans-serif;
+      }
+
+      body {
+        background: black;
+        color: #00f7ff;
+        overflow: hidden;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      /* PARTICLE CANVAS */
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+
+      img {
+        width: 120px;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 15px #00f7ff);
+      }
+
+      /* GLITCH EFFECT */
+      .glitch {
+        font-size: 2.2rem;
+        position: relative;
+        color: #00f7ff;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        animation: flicker 1.5s infinite alternate;
+      }
+
+      .glitch::before,
+      .glitch::after {
+        content: "COLPY LAUNCHES IN";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        color: #ff00c8;
+        clip: rect(0, 900px, 0, 0);
+      }
+
+      .glitch::before {
+        animation: glitchTop 2s infinite linear alternate-reverse;
+      }
+
+      .glitch::after {
+        color: #00ff88;
+        animation: glitchBottom 1.5s infinite linear alternate-reverse;
+      }
+
+      @keyframes glitchTop {
+        0% {
+          clip: rect(0, 9999px, 0, 0);
+        }
+        20% {
+          clip: rect(0, 9999px, 30px, 0);
+        }
+        40% {
+          clip: rect(10px, 9999px, 50px, 0);
+        }
+        60% {
+          clip: rect(5px, 9999px, 40px, 0);
+        }
+        100% {
+          clip: rect(0, 9999px, 0, 0);
+        }
+      }
+
+      @keyframes glitchBottom {
+        0% {
+          clip: rect(0, 9999px, 0, 0);
+        }
+        20% {
+          clip: rect(40px, 9999px, 80px, 0);
+        }
+        40% {
+          clip: rect(30px, 9999px, 60px, 0);
+        }
+        60% {
+          clip: rect(50px, 9999px, 90px, 0);
+        }
+        100% {
+          clip: rect(0, 9999px, 0, 0);
+        }
+      }
+
+      @keyframes flicker {
+        from {
+          opacity: 0.8;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .countdown {
+        display: flex;
+        gap: 20px;
+        margin-top: 40px;
+      }
+
+      .box {
+        border: 1px solid #00f7ff;
+        padding: 20px;
+        width: 90px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px #00f7ff;
+      }
+
+      .number {
+        font-size: 1.8rem;
+      }
+
+      .label {
+        font-size: 0.7rem;
+        margin-top: 5px;
+      }
+
+      .live {
+        font-size: 2rem;
+        margin-top: 30px;
+        color: #00ff88;
+        text-shadow: 0 0 20px #00ff88;
+        animation: pulse 1s infinite alternate;
+      }
+
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.1);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="particles"></canvas>
+
+    <img src="./colpy_logo3.jpeg" alt="Colpy Logo" />
+    <div class="glitch">COLPY LAUNCHES IN</div>
+
+    <div class="countdown">
+      <div class="box">
+        <div class="number" id="days">0</div>
+        <div class="label">DAYS</div>
+      </div>
+      <div class="box">
+        <div class="number" id="hours">0</div>
+        <div class="label">HOURS</div>
+      </div>
+      <div class="box">
+        <div class="number" id="minutes">0</div>
+        <div class="label">MINUTES</div>
+      </div>
+      <div class="box">
+        <div class="number" id="seconds">0</div>
+        <div class="label">SECONDS</div>
+      </div>
+    </div>
+
+    <div id="liveMessage"></div>
+
+    <script>
+      const launchDate = new Date("Febuary 19, 2026 00:00:00").getTime();
+      const redirectURL = "https://www.colpy.online"; // CHANGE THIS
+
+      const timer = setInterval(function () {
+        const now = new Date().getTime();
+        const distance = launchDate - now;
+
+        if (distance < 0) {
+          clearInterval(timer);
+          document.querySelector(".countdown").style.display = "none";
+          document.getElementById("liveMessage").innerHTML =
+            '<div class="live">🚀 COLPY IS LIVE</div>';
+
+          setTimeout(() => {
+            window.location.href = redirectURL;
+          }, 4000);
+
+          return;
+        }
+
+        document.getElementById("days").innerText = Math.floor(
+          distance / (1000 * 60 * 60 * 24),
+        );
+        document.getElementById("hours").innerText = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+        document.getElementById("minutes").innerText = Math.floor(
+          (distance % (1000 * 60 * 60)) / (1000 * 60),
+        );
+        document.getElementById("seconds").innerText = Math.floor(
+          (distance % (1000 * 60)) / 1000,
+        );
+      }, 1000);
+
+      /* PARTICLES */
+      const canvas = document.getElementById("particles");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+
+      for (let i = 0; i < 120; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 2,
+          dx: Math.random() - 0.5,
+          dy: Math.random() - 0.5,
+        });
+      }
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#00f7ff";
+
+        particles.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          p.x += p.dx;
+          p.y += p.dy;
+
+          if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+        });
+
+        requestAnimationFrame(animateParticles);
+      }
+
+      animateParticles();
+    </script>
+  </body>
+</html>
